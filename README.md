@@ -7,3 +7,5 @@ w3m Axx_xxs.html > Axx_xx.txt
 python/python3 shepher.py Axx_xx.txt > Axx_xxs.txt
 ```
 ### The `Axx_xxs.txt` is the final file.
+
+-# You need to install `python/python3`, `pdftohtml`, `w3m` first to run above code.
