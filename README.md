@@ -1,5 +1,5 @@
 ## Dump from `https://www.churchintaichung.org/shepherding_materials/seriesxx/Axx_xx.pdf` .
-### Usege(Linux only... or you can try WSL):
+### Usage(Linux only... or you can try WSL):
 ```sh
 curl -O https://www.churchintaichung.org/shepherding_materials/seriesxx/Axx_xx.pdf
 pdftohtml Axx_xx.pdf Axx_xx.html
