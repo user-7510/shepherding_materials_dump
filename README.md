@@ -11,4 +11,4 @@ python/python3 shepher.py Axx_xx.txt > Axx_xxs.txt
 - You need to install `python/python3`, `pdftohtml`, `w3m` first to run above code.
 
 ### Thanks to Church in Taichung for providing the original archives.
-### `shepher.py` was written by H.L.2026
+- `shepher.py` was written by H.L.2026
