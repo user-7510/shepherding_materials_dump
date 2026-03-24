@@ -1,8 +1,8 @@
-#將已轉換為TXT的牧養材料檔案放在同個資料夾中。也可填入預設值於下方。
+#將已轉換為TXT的牧養材料檔案放在同個資料夾中。將該檔案的名稱作為引數傳入程式。
 import sys
 try:name=sys.argv[1]
-except:pass
-with open(input().strip()or name,'r')as f:raw=f.readlines()
+except:print("沒帶參數欸")
+with open(name,'r')as f:raw=f.readlines()
 res=f'{raw.pop(0)}\n\n{raw.pop(0)}\n\n'
 coms=['、','，','。','；','：','（','）','『','』'];nums=['1','2','3','4','5','6','7','8','9']
 for line in raw:
