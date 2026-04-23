@@ -8,7 +8,7 @@ python/python3 shepher.py Axx_xx.txt > Axx_xxs.txt
 ```
 ### The `Axx_xxs.txt` is the final file.
 
-- You need to install `python/python3`, `pdftohtml`, `w3m` first to run above code.
+- You need to install `python/python3`, `pdftohtml in package poppler`, `w3m` first to run above code.
 
 ### Thanks to Church in Taichung for providing the original archives.
 - `shepher.py` was written by H.L.2026
