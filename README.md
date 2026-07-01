@@ -5,7 +5,7 @@ curl -O "https://raw.githubusercontent.com/user-7510/shepherding_materials_dump/
 chmod +x autoDump.sh
 ./autoDump.sh
 ```
-### The `A${series}_${chapter}.pdf` is the final file.
+### The `AXX_XXs.txt` is the final file.
 
 - You need to install `python/python3`, `pdftohtml in package poppler`, `w3m` first to run above code.
 
