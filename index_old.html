@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牧養材料</title>
+    <style>
+        /* -----------------------------------------------------------
+           1. 變數與路徑設定 (CSS 部分可調整樣式)
+        ----------------------------------------------------------- */
+        :root {
+            --bg-color: #fcfaf7;       /* 背景色：米白保護眼睛 */
+            --text-color: #333;        /* 文字顏色 */
+            --font-mobile: 1.1rem;      /* 手機版字體大小 */
+            --font-desktop: 1.25rem;    /* 電腦版字體大小 */
+            --line-height: 1.8;         /* 行高，建議 1.6~1.8 較好閱讀 */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        #content-container {
+            width: 100%;
+            max-width: 800px; /* 限制寬度避免在大螢幕上行太長難閱讀 */
+            
+            /* 核心：自動換行設定 */
+            white-space: pre-wrap;       /* 保留文字檔原始換行，但允許自動軟換行 */
+            word-wrap: break-word;       /* 處理過長的單字或網址 */
+            overflow-wrap: break-word;   
+            
+            /* 動態字體大小：根據裝置寬度微調 */
+            font-size: clamp(var(--font-mobile), 4vw, var(--font-desktop));
+            line-height: var(--line-height);
+        }
+
+        /* 讀取中的提示樣式 */
+        .loading {
+            color: #888;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="content-container">
+        <div class="loading">Loading...</div>
+    </div>
+
+    <script>
+        /* -----------------------------------------------------------
+           2. 設定目標文字檔路徑 (在此處修改你的 URL)
+        ----------------------------------------------------------- */
+        // 請貼上你的 GitHub Raw 網址 (例如：https://raw.githubusercontent.com/使用者/倉庫/main/檔案.txt)
+        const TEXT_FILE_URL = 'https://raw.githubusercontent.com/user-7510/shepherding_materials_dump/refs/heads/main/A01_15s.txt';
+
+        async function loadTextFile() {
+            const container = document.getElementById('content-container');
+            
+            try {
+                const response = await fetch(TEXT_FILE_URL);
+                
+                if (!response.ok) {
+                    throw new Error('無法讀取檔案，請檢查路徑是否正確（需為 Raw 連結）');
+                }
+
+                const text = await response.text();
+                // 將文字放入容器，innerText 會保留原始換行
+                container.innerText = text;
+
+            } catch (error) {
+                container.innerHTML = `<div style="color:red;">錯誤: ${error.message}</div>`;
+            }
+        }
+
+        // 執行載入
+        loadTextFile();
+    </script>
+
+</body>
+</html>
