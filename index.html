@@ -122,7 +122,7 @@
 <body>
 
     <div id="toolbar">
-        <span id="toolbarTitle">牧養材料 系列二</span>
+        <span id="toolbarTitle">牧養材料 Now:系列二第二題</span>
         <select id="chapterSelect" class="toolbarButton" aria-label="切換章節" style="display:none;"></select>
         <div id="toolbarButtons">
             <button id="fontDecreaseBtn" class="toolbarButton" aria-label="縮小字體">A-</button>
@@ -166,7 +166,7 @@
                 const textResponse = await fetch(textFileUrl, { cache: 'no-store' });
 
                 if (!textResponse.ok) {
-                    throw new Error(`HTTP ${textResponse.status}：無法讀取檔案，請檢查路徑是否正確（需為 Raw 連結）`);
+                    throw new Error(`HTTP ${textResponse.status}：無法讀取檔案，八成是我搞錯了。`);
                 }
 
                 container.textContent = await textResponse.text();
