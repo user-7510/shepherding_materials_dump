@@ -96,6 +96,12 @@
             opacity: 0.8;
         }
 
+        #chapterSelect {
+            flex: 1 1 auto;
+            min-width: 0;
+            max-width: 220px;
+        }
+
         #content-container {
             width: 100%;
             max-width: 800px;
@@ -117,6 +123,7 @@
 
     <div id="toolbar">
         <span id="toolbarTitle">牧養材料 系列二</span>
+        <select id="chapterSelect" class="toolbarButton" aria-label="切換章節" style="display:none;"></select>
         <div id="toolbarButtons">
             <button id="fontDecreaseBtn" class="toolbarButton" aria-label="縮小字體">A-</button>
             <button id="fontIncreaseBtn" class="toolbarButton" aria-label="放大字體">A+</button>
@@ -129,22 +136,86 @@
     </div>
 
     <script>
-        const TEXT_FILE_URL = 'https://raw.githubusercontent.com/user-7510/shepherding_materials_dump/refs/heads/main/data/A02_02s.txt';
+        const CONFIG_URL = 'https://raw.githubusercontent.com/user-7510/shepherding_materials_dump/refs/heads/main/data/config.json';
         const FONT_SCALE_MIN = 0.7;
         const FONT_SCALE_MAX = 2.0;
         const FONT_SCALE_STEP = 0.1;
+        const SELECTED_CHAPTER_KEY = 'selectedChapterTitle';
+
+        let chaptersMap = {};
+
+        async function loadConfig() {
+            const configResponse = await fetch(CONFIG_URL, { cache: 'no-store' });
+
+            if (!configResponse.ok) {
+                throw new Error(`HTTP ${configResponse.status}：無法讀取設定檔 config.json`);
+            }
+
+            return await configResponse.json();
+        }
+
+        async function loadTextFromUrl(textFileUrl) {
+            const container = document.getElementById('content-container');
+            container.innerHTML = '<div class="loading">Loading...</div>';
+
+            try {
+                if (!textFileUrl) {
+                    throw new Error('缺少可載入的文字檔連結');
+                }
+
+                const textResponse = await fetch(textFileUrl, { cache: 'no-store' });
+
+                if (!textResponse.ok) {
+                    throw new Error(`HTTP ${textResponse.status}：無法讀取檔案，請檢查路徑是否正確（需為 Raw 連結）`);
+                }
+
+                container.textContent = await textResponse.text();
+            } catch (error) {
+                container.innerHTML = `<div style="color:red;">錯誤: ${error.message}</div>`;
+            }
+        }
+
+        function populateChapterSelect(initialTitle) {
+            const select = document.getElementById('chapterSelect');
+            select.innerHTML = '';
+
+            Object.keys(chaptersMap).forEach((title) => {
+                const option = document.createElement('option');
+                option.value = title;
+                option.textContent = title;
+                select.appendChild(option);
+            });
+
+            select.value = initialTitle;
+            select.style.display = 'inline-block';
+
+            select.addEventListener('change', () => {
+                const selectedTitle = select.value;
+                localStorage.setItem(SELECTED_CHAPTER_KEY, selectedTitle);
+                loadTextFromUrl(chaptersMap[selectedTitle]);
+            });
+        }
 
         async function loadTextFile() {
             const container = document.getElementById('content-container');
 
             try {
-                const response = await fetch(TEXT_FILE_URL, { cache: 'no-store' });
+                const config = await loadConfig();
+                chaptersMap = config.chapters || {};
+                const chapterTitles = Object.keys(chaptersMap);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}：無法讀取檔案，請檢查路徑是否正確（需為 Raw 連結）`);
+                if (chapterTitles.length > 0) {
+                    const savedTitle = localStorage.getItem(SELECTED_CHAPTER_KEY);
+                    const initialTitle = (savedTitle && chaptersMap[savedTitle]) ? savedTitle : chapterTitles[0];
+
+                    populateChapterSelect(initialTitle);
+                    await loadTextFromUrl(chaptersMap[initialTitle]);
+                } else {
+                    if (!config.textFileUrl) {
+                        throw new Error('config.json 內缺少 textFileUrl 或 chapters 欄位');
+                    }
+                    await loadTextFromUrl(config.textFileUrl);
                 }
-
-                container.textContent = await response.text();
             } catch (error) {
                 container.innerHTML = `<div style="color:red;">錯誤: ${error.message}</div>`;
             }
