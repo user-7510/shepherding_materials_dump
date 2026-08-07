@@ -4,13 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>牧養材料</title>
+    <noscript>
+        <meta http-equiv="refresh" content="0; url=https://raw.githubusercontent.com/user-7510/shepherding_materials_dump/refs/heads/main/data/A02_02s.txt">
+    </noscript>
     <style>
         :root {
             --bg-color: #fcfaf7;
             --text-color: #333;
+            --toolbar-bg: #f0ede7;
+            --toolbar-border: #ddd8cf;
+            --btn-bg: #fff;
+            --btn-border: #ccc;
             --font-mobile: 1.1rem;
             --font-desktop: 1.25rem;
             --line-height: 1.8;
+            --font-scale: 1;
+        }
+
+        html.darkMode {
+            --bg-color: #1c1c1c;
+            --text-color: #e4e4e4;
+            --toolbar-bg: #2a2a2a;
+            --toolbar-border: #3d3d3d;
+            --btn-bg: #333;
+            --btn-border: #555;
         }
 
         body {
@@ -18,9 +35,65 @@
             color: var(--text-color);
             margin: 0;
             padding: 20px;
+            padding-top: var(--toolbar-height, 64px);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            width: calc(100% - 40px);
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background-color: var(--toolbar-bg);
+            border: 1px solid var(--toolbar-border);
+            border-radius: 8px;
+            padding: 8px;
+            margin: 20px 0 16px;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        #toolbar.toolbarHidden {
+            transform: translateX(-50%) translateY(-130%);
+        }
+
+        #toolbarTitle {
+            font-weight: 600;
+            font-size: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 8px;
+        }
+
+        #toolbarButtons {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .toolbarButton {
+            background-color: var(--btn-bg);
+            color: var(--text-color);
+            border: 1px solid var(--btn-border);
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .toolbarButton:hover {
+            opacity: 0.8;
         }
 
         #content-container {
@@ -29,7 +102,7 @@
             white-space: pre-wrap;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            font-size: clamp(var(--font-mobile), 4vw, var(--font-desktop));
+            font-size: calc(clamp(var(--font-mobile), 4vw, var(--font-desktop)) * var(--font-scale));
             line-height: var(--line-height);
         }
 
@@ -42,12 +115,24 @@
 </head>
 <body>
 
+    <div id="toolbar">
+        <span id="toolbarTitle">牧養材料 系列二</span>
+        <div id="toolbarButtons">
+            <button id="fontDecreaseBtn" class="toolbarButton" aria-label="縮小字體">A-</button>
+            <button id="fontIncreaseBtn" class="toolbarButton" aria-label="放大字體">A+</button>
+            <button id="darkModeBtn" class="toolbarButton" aria-label="切換深色模式">深色模式</button>
+        </div>
+    </div>
+
     <div id="content-container">
         <div class="loading">Loading...</div>
     </div>
 
     <script>
         const TEXT_FILE_URL = 'https://raw.githubusercontent.com/user-7510/shepherding_materials_dump/refs/heads/main/data/A02_02s.txt';
+        const FONT_SCALE_MIN = 0.7;
+        const FONT_SCALE_MAX = 2.0;
+        const FONT_SCALE_STEP = 0.1;
 
         async function loadTextFile() {
             const container = document.getElementById('content-container');
@@ -65,6 +150,70 @@
             }
         }
 
+        function applyDarkMode(isDark) {
+            document.documentElement.classList.toggle('darkMode', isDark);
+            localStorage.setItem('darkMode', isDark ? '1' : '0');
+        }
+
+        function applyFontScale(scale) {
+            const clampedScale = Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, scale));
+            document.documentElement.style.setProperty('--font-scale', clampedScale);
+            localStorage.setItem('fontScale', String(clampedScale));
+            return clampedScale;
+        }
+
+        const SCROLL_HIDE_THRESHOLD = 80;
+
+        function updateToolbarHeight() {
+            const toolbar = document.getElementById('toolbar');
+            const height = toolbar.offsetHeight + 20;
+            document.documentElement.style.setProperty('--toolbar-height', `${height}px`);
+        }
+
+        function initScrollHide() {
+            const toolbar = document.getElementById('toolbar');
+            let lastScrollY = window.scrollY;
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                const isScrollingDown = currentScrollY > lastScrollY;
+
+                if (isScrollingDown && currentScrollY > SCROLL_HIDE_THRESHOLD) {
+                    toolbar.classList.add('toolbarHidden');
+                } else {
+                    toolbar.classList.remove('toolbarHidden');
+                }
+
+                lastScrollY = currentScrollY;
+            }, { passive: true });
+        }
+
+        function initToolbar() {
+            let currentScale = parseFloat(localStorage.getItem('fontScale')) || 1;
+            currentScale = applyFontScale(currentScale);
+
+            const savedDarkMode = localStorage.getItem('darkMode') === '1';
+            applyDarkMode(savedDarkMode);
+
+            document.getElementById('darkModeBtn').addEventListener('click', () => {
+                const isDark = !document.documentElement.classList.contains('darkMode');
+                applyDarkMode(isDark);
+            });
+
+            document.getElementById('fontIncreaseBtn').addEventListener('click', () => {
+                currentScale = applyFontScale(currentScale + FONT_SCALE_STEP);
+            });
+
+            document.getElementById('fontDecreaseBtn').addEventListener('click', () => {
+                currentScale = applyFontScale(currentScale - FONT_SCALE_STEP);
+            });
+
+            updateToolbarHeight();
+            window.addEventListener('resize', updateToolbarHeight);
+            initScrollHide();
+        }
+
+        initToolbar();
         loadTextFile();
     </script>
 
