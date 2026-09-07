@@ -9,33 +9,46 @@
     </noscript>
     <style>
         :root {
-            --bg-color: #fcfaf7;
-            --text-color: #333;
-            --toolbar-bg: #f0ede7;
-            --toolbar-border: #ddd8cf;
-            --btn-bg: #fff;
-            --btn-border: #ccc;
-            --font-mobile: 1.1rem;
-            --font-desktop: 1.25rem;
-            --line-height: 1.8;
+            --bg-color: #f4e6cd;
+            --content-bg: #f6e9d2;
+            --text-color: #6b5a63;
+            --title-color: #b9863d;
+            --toolbar-bg: linear-gradient(135deg, #b3854a, #8f6530);
+            --toolbar-text: #fdf6ea;
+            --toolbar-border: transparent;
+            --btn-bg: rgba(255, 255, 255, 0.16);
+            --btn-border: rgba(255, 255, 255, 0.45);
+            --accent-gold: #c08a3e;
+            --track-color: #ddd0b8;
+            --font-mobile: 1.15rem;
+            --font-desktop: 1.3rem;
+            --line-height: 1.9;
             --font-scale: 1;
         }
 
         html.darkMode {
-            --bg-color: #1c1c1c;
-            --text-color: #e4e4e4;
-            --toolbar-bg: #2a2a2a;
-            --toolbar-border: #3d3d3d;
-            --btn-bg: #333;
-            --btn-border: #555;
+            --bg-color: #000000;
+            --content-bg: #000000;
+            --text-color: #f2ede1;
+            --title-color: #d9a25a;
+            --toolbar-bg: linear-gradient(135deg, #b3854a, #8f6530);
+            --toolbar-text: #fdf6ea;
+            --btn-bg: rgba(255, 255, 255, 0.08);
+            --btn-border: rgba(255, 255, 255, 0.25);
+            --accent-gold: #d9a25a;
+            --track-color: #4a4a4a;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
-            padding-top: var(--toolbar-height, 64px);
+            padding: 0 20px 96px;
+            padding-top: var(--toolbar-height, 60px);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -46,93 +59,259 @@
         #toolbar {
             position: fixed;
             top: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(0);
-            width: calc(100% - 40px);
-            max-width: 800px;
+            left: 0;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
-            background-color: var(--toolbar-bg);
-            border: 1px solid var(--toolbar-border);
-            border-radius: 8px;
-            padding: 8px;
-            margin: 20px 0 16px;
+            background: var(--toolbar-bg);
+            color: var(--toolbar-text);
+            border-bottom: 1px solid var(--toolbar-border);
+            padding: 14px 16px;
             z-index: 10;
             transition: transform 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
         }
 
         #toolbar.toolbarHidden {
-            transform: translateX(-50%) translateY(-130%);
+            transform: translateY(-130%);
+        }
+
+        #toolbarLeft {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        #playIcon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #toolbarTitle {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            color: var(--toolbar-text);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-right: 8px;
         }
 
-        #toolbarButtons {
-            display: flex;
-            gap: 8px;
+        #moreBtn {
+            background: none;
+            border: none;
+            color: var(--toolbar-text);
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px 8px;
             flex-shrink: 0;
+        }
+
+        #toolbarExtra {
+            position: fixed;
+            top: var(--toolbar-height, 60px);
+            right: 16px;
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background-color: var(--content-bg);
+            border: 1px solid var(--track-color);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #toolbarExtra.open {
+            display: flex;
         }
 
         .toolbarButton {
             background-color: var(--btn-bg);
-            color: var(--text-color);
+            color: var(--toolbar-text);
             border: 1px solid var(--btn-border);
             border-radius: 6px;
             padding: 6px 12px;
             font-size: 0.95rem;
             cursor: pointer;
+            white-space: nowrap;
         }
 
         .toolbarButton:hover {
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
-        #chapterSelect {
-            flex: 1 1 auto;
-            min-width: 0;
-            max-width: 220px;
+        #toolbarExtra .toolbarButton {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--track-color);
         }
 
         #content-container {
             width: 100%;
             max-width: 800px;
+            background-color: var(--content-bg);
+            border-radius: 12px;
+            padding: 28px 22px 16px;
+            margin-top: 12px;
+        }
+
+        #contentTitle {
+            text-align: center;
+            color: var(--title-color);
+            font-weight: 700;
+            font-size: calc(1.9rem * var(--font-scale));
+            margin: 0 0 24px;
+        }
+
+        #textBody {
             white-space: pre-wrap;
             word-wrap: break-word;
             overflow-wrap: break-word;
             font-size: calc(clamp(var(--font-mobile), 4vw, var(--font-desktop)) * var(--font-scale));
             line-height: var(--line-height);
+            color: var(--text-color);
+        }
+
+        #textBody .heading-block {
+            display: block;
+            color: var(--title-color);
+            font-weight: 700;
+            margin: 10px 0;
+            scroll-margin-top: calc(var(--toolbar-height, 60px) + 16px);
         }
 
         .loading {
-            color: #888;
+            color: #a08f6e;
             text-align: center;
             margin-top: 50px;
+        }
+
+        #bottomBar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--content-bg);
+            z-index: 10;
+        }
+
+        #progressTrack {
+            width: 100%;
+            height: 3px;
+            background-color: var(--track-color);
+        }
+
+        #progressFill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent-gold);
+            transition: width 0.1s linear;
+        }
+
+        #bottomButtons {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 12px;
+            padding: 10px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .navButton {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex: 1 1 auto;
+            max-width: 220px;
+            background: none;
+            border: 1px solid var(--accent-gold);
+            border-radius: 999px;
+            color: var(--accent-gold);
+            font-size: 0.95rem;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+
+        .navButton:hover {
+            opacity: 0.85;
+        }
+
+        .navIcon {
+            font-size: 1.1rem;
+            line-height: 1;
+        }
+
+        #chapterButtonWrap {
+            display: none;
+        }
+
+        #chapterButtonWrap.visible {
+            display: flex;
+        }
+
+        #chapterSelect {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <div id="toolbar">
-        <span id="toolbarTitle">牧養材料 本週進度:系列二第五題</span>
-        <select id="chapterSelect" class="toolbarButton" aria-label="切換章節" style="display:none;"></select>
-        <div id="toolbarButtons">
-            <button id="fontDecreaseBtn" class="toolbarButton" aria-label="縮小字體">A-</button>
-            <button id="fontIncreaseBtn" class="toolbarButton" aria-label="放大字體">A+</button>
-            <button id="darkModeBtn" class="toolbarButton" aria-label="切換深色模式">深色模式</button>
+        <div id="toolbarLeft">
+            <span id="playIcon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16">
+                    <path d="M3 1.5 L14 8 L3 14.5 Z" fill="currentColor"></path>
+                </svg>
+            </span>
+            <span id="toolbarTitle">牧養材料 本週進度:系列二第五題</span>
         </div>
+        <button id="moreBtn" aria-label="更多選項" aria-expanded="false">&#8942;</button>
+    </div>
+
+    <div id="toolbarExtra">
+        <button id="fontDecreaseBtn" class="toolbarButton" aria-label="縮小字體">A-</button>
+        <button id="fontIncreaseBtn" class="toolbarButton" aria-label="放大字體">A+</button>
+        <button id="darkModeBtn" class="toolbarButton" aria-label="切換深色模式">深色模式</button>
     </div>
 
     <div id="content-container">
-        <div class="loading">Loading...</div>
+        <h1 id="contentTitle">懷念簡介</h1>
+        <div id="textBody">
+            <div class="loading">Loading...</div>
+        </div>
+    </div>
+
+    <div id="bottomBar">
+        <div id="progressTrack"><div id="progressFill"></div></div>
+        <div id="bottomButtons">
+            <button id="jumpHeadingBtn" class="navButton" type="button" aria-label="跳至下一個小標題">
+                <span class="navIcon" aria-hidden="true">&sect;</span>
+                <span class="navLabel">跳至小標題</span>
+            </button>
+            <div id="chapterButtonWrap" class="navButton">
+                <span class="navIcon" aria-hidden="true">&#9776;</span>
+                <span class="navLabel">切換章節</span>
+                <select id="chapterSelect" aria-label="切換章節"></select>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -141,8 +320,55 @@
         const FONT_SCALE_MAX = 2.0;
         const FONT_SCALE_STEP = 0.1;
         const SELECTED_CHAPTER_KEY = 'selectedChapterTitle';
+        const HEADING_PUNCTUATION = ['、', '，', '。', '；', '：', '（', '）', '『', '』'];
 
         let chaptersMap = {};
+
+        function isHeadingBlock(blockText) {
+            if (!blockText) {
+                return false;
+            }
+            return !HEADING_PUNCTUATION.some((mark) => blockText.includes(mark));
+        }
+
+        function renderContent(rawText) {
+            const container = document.getElementById('textBody');
+            container.innerHTML = '';
+
+            const blocks = rawText.split(/\n{2,}/);
+
+            blocks.forEach((block) => {
+                const trimmed = block.trim();
+                if (!trimmed) {
+                    return;
+                }
+
+                const span = document.createElement('span');
+                span.textContent = trimmed;
+
+                if (isHeadingBlock(trimmed)) {
+                    span.className = 'heading-block';
+                }
+
+                container.appendChild(span);
+                container.appendChild(document.createTextNode('\n\n'));
+            });
+        }
+
+        function jumpToNextHeading() {
+            const headings = Array.from(document.querySelectorAll('#textBody .heading-block'));
+            if (headings.length === 0) {
+                return;
+            }
+
+            const scrollMarker = window.scrollY + 20;
+            const next = headings.find((heading) => {
+                const top = heading.getBoundingClientRect().top + window.scrollY;
+                return top > scrollMarker;
+            });
+
+            (next || headings[0]).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
 
         async function loadConfig() {
             const configResponse = await fetch(CONFIG_URL, { cache: 'no-store' });
@@ -154,9 +380,13 @@
             return await configResponse.json();
         }
 
-        async function loadTextFromUrl(textFileUrl) {
-            const container = document.getElementById('content-container');
+        async function loadTextFromUrl(textFileUrl, title) {
+            const container = document.getElementById('textBody');
             container.innerHTML = '<div class="loading">Loading...</div>';
+
+            if (title) {
+                document.getElementById('contentTitle').textContent = title;
+            }
 
             try {
                 if (!textFileUrl) {
@@ -169,14 +399,17 @@
                     throw new Error(`HTTP ${textResponse.status}：無法讀取檔案，八成是我搞錯了。`);
                 }
 
-                container.textContent = await textResponse.text();
+                renderContent(await textResponse.text());
             } catch (error) {
                 container.innerHTML = `<div style="color:red;">錯誤: ${error.message}</div>`;
             }
+
+            window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
         }
 
         function populateChapterSelect(initialTitle) {
             const select = document.getElementById('chapterSelect');
+            const wrap = document.getElementById('chapterButtonWrap');
             select.innerHTML = '';
 
             Object.keys(chaptersMap).forEach((title) => {
@@ -187,17 +420,17 @@
             });
 
             select.value = initialTitle;
-            select.style.display = 'inline-block';
+            wrap.classList.add('visible');
 
             select.addEventListener('change', () => {
                 const selectedTitle = select.value;
                 localStorage.setItem(SELECTED_CHAPTER_KEY, selectedTitle);
-                loadTextFromUrl(chaptersMap[selectedTitle]);
+                loadTextFromUrl(chaptersMap[selectedTitle], selectedTitle);
             });
         }
 
         async function loadTextFile() {
-            const container = document.getElementById('content-container');
+            const container = document.getElementById('textBody');
 
             try {
                 const config = await loadConfig();
@@ -209,12 +442,12 @@
                     const initialTitle = (savedTitle && chaptersMap[savedTitle]) ? savedTitle : chapterTitles[0];
 
                     populateChapterSelect(initialTitle);
-                    await loadTextFromUrl(chaptersMap[initialTitle]);
+                    await loadTextFromUrl(chaptersMap[initialTitle], initialTitle);
                 } else {
                     if (!config.textFileUrl) {
                         throw new Error('config.json 內缺少 textFileUrl 或 chapters 欄位');
                     }
-                    await loadTextFromUrl(config.textFileUrl);
+                    await loadTextFromUrl(config.textFileUrl, config.title || document.getElementById('toolbarTitle').textContent);
                 }
             } catch (error) {
                 container.innerHTML = `<div style="color:red;">錯誤: ${error.message}</div>`;
@@ -237,8 +470,15 @@
 
         function updateToolbarHeight() {
             const toolbar = document.getElementById('toolbar');
-            const height = toolbar.offsetHeight + 20;
+            const height = toolbar.offsetHeight + 12;
             document.documentElement.style.setProperty('--toolbar-height', `${height}px`);
+        }
+
+        function updateProgressBar() {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const percent = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+            document.getElementById('progressFill').style.width = `${percent}%`;
         }
 
         function initScrollHide() {
@@ -256,7 +496,30 @@
                 }
 
                 lastScrollY = currentScrollY;
+                updateProgressBar();
             }, { passive: true });
+        }
+
+        function initMoreMenu() {
+            const moreBtn = document.getElementById('moreBtn');
+            const extra = document.getElementById('toolbarExtra');
+
+            moreBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const isOpen = extra.classList.toggle('open');
+                moreBtn.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!extra.contains(event.target) && event.target !== moreBtn) {
+                    extra.classList.remove('open');
+                    moreBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        function initBottomNav() {
+            document.getElementById('jumpHeadingBtn').addEventListener('click', jumpToNextHeading);
         }
 
         function initToolbar() {
@@ -282,6 +545,8 @@
             updateToolbarHeight();
             window.addEventListener('resize', updateToolbarHeight);
             initScrollHide();
+            initMoreMenu();
+            initBottomNav();
         }
 
         initToolbar();
@@ -290,3 +555,4 @@
 
 </body>
 </html>
+
