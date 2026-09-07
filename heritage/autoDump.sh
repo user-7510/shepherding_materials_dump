@@ -26,6 +26,7 @@ with open(fileName, 'r', encoding='utf-8') as f:
 
 cleanedLines = [re.sub(r'background\s*image', '', line, flags=re.IGNORECASE) for line in rawLines]
 
+# 移除開頭因清除 background image 而變成空白的行
 while cleanedLines and not cleanedLines[0].strip():
     cleanedLines.pop(0)
 
@@ -59,15 +60,9 @@ for idx, para in enumerate(paragraphs):
     else:
         finalText += para
 
-finalText = re.sub(r'[0-9]', '', finalText)
-finalText = re.sub(r'\n{2,}', '\n', finalText)
-
 print(finalText)
 PYEOF
 
 rm -f "$pdfFile" "$htmlFile" "$rawTxtFile" "${baseName}"*.png
 
-mkdir -p ./data
-mv "$finalTxtFile" ./data/
-
-echo "完成：./data/${finalTxtFile}"
+echo "完成：${finalTxtFile}"
