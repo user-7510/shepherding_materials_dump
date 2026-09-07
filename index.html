@@ -22,7 +22,7 @@
             --track-color: #ddd0b8;
             --font-mobile: 1.15rem;
             --font-desktop: 1.3rem;
-            --line-height: 1.9;
+            --line-height: 1.5;
             --font-scale: 1;
         }
 
@@ -184,7 +184,7 @@
             display: block;
             color: var(--title-color);
             font-weight: 700;
-            margin: 10px 0;
+            margin: 4px 0;
             scroll-margin-top: calc(var(--toolbar-height, 60px) + 16px);
         }
 
@@ -281,7 +281,7 @@
                     <path d="M3 1.5 L14 8 L3 14.5 Z" fill="currentColor"></path>
                 </svg>
             </span>
-            <span id="toolbarTitle">牧養材料 本週進度:系列二第五題</span>
+            <span id="toolbarTitle">牧養材料 本週進度 系列二第六題</span>
         </div>
         <button id="moreBtn" aria-label="更多選項" aria-expanded="false">&#8942;</button>
     </div>
@@ -293,7 +293,7 @@
     </div>
 
     <div id="content-container">
-        <h1 id="contentTitle">懷念簡介</h1>
+        <h1 id="contentTitle">牧養材料(若您看到本頁面表示您的瀏覽器不支援JS)</h1>
         <div id="textBody">
             <div class="loading">Loading...</div>
         </div>
@@ -302,14 +302,10 @@
     <div id="bottomBar">
         <div id="progressTrack"><div id="progressFill"></div></div>
         <div id="bottomButtons">
-            <button id="jumpHeadingBtn" class="navButton" type="button" aria-label="跳至下一個小標題">
-                <span class="navIcon" aria-hidden="true">&sect;</span>
-                <span class="navLabel">跳至小標題</span>
-            </button>
             <div id="chapterButtonWrap" class="navButton">
                 <span class="navIcon" aria-hidden="true">&#9776;</span>
-                <span class="navLabel">切換章節</span>
-                <select id="chapterSelect" aria-label="切換章節"></select>
+                <span class="navLabel">切換篇目</span>
+                <select id="chapterSelect" aria-label="切換篇目"></select>
             </div>
         </div>
     </div>
@@ -353,21 +349,6 @@
                 container.appendChild(span);
                 container.appendChild(document.createTextNode('\n\n'));
             });
-        }
-
-        function jumpToNextHeading() {
-            const headings = Array.from(document.querySelectorAll('#textBody .heading-block'));
-            if (headings.length === 0) {
-                return;
-            }
-
-            const scrollMarker = window.scrollY + 20;
-            const next = headings.find((heading) => {
-                const top = heading.getBoundingClientRect().top + window.scrollY;
-                return top > scrollMarker;
-            });
-
-            (next || headings[0]).scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         async function loadConfig() {
@@ -518,15 +499,12 @@
             });
         }
 
-        function initBottomNav() {
-            document.getElementById('jumpHeadingBtn').addEventListener('click', jumpToNextHeading);
-        }
-
         function initToolbar() {
             let currentScale = parseFloat(localStorage.getItem('fontScale')) || 1;
             currentScale = applyFontScale(currentScale);
 
-            const savedDarkMode = localStorage.getItem('darkMode') === '1';
+            const storedDarkMode = localStorage.getItem('darkMode');
+            const savedDarkMode = storedDarkMode === '1';
             applyDarkMode(savedDarkMode);
 
             document.getElementById('darkModeBtn').addEventListener('click', () => {
@@ -546,7 +524,6 @@
             window.addEventListener('resize', updateToolbarHeight);
             initScrollHide();
             initMoreMenu();
-            initBottomNav();
         }
 
         initToolbar();
@@ -555,4 +532,3 @@
 
 </body>
 </html>
-
